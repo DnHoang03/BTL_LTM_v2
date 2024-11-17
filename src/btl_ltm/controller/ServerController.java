@@ -105,6 +105,10 @@ public class ServerController {
                         int roomId = (int)out.readObject();
                         handleEventEndgame(username, time, point, roomId, in);
                         break;
+                    case "getWinner":
+                        int rId = (int)out.readObject();
+                        handeEventGetWinner(rId, in);
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -158,7 +162,6 @@ public class ServerController {
                 room.setTime(time);
                 room.setWinner(username);
             }
-            inp.writeObject(room);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -183,5 +186,9 @@ public class ServerController {
         }
     }
     
-    
+    private void handeEventGetWinner(int roomId, ObjectOutputStream in) throws IOException {
+        Room room = roomDao.getRoomById(roomId);
+        in.writeObject(room.getWinner());
+        in.flush();
+    }
 }

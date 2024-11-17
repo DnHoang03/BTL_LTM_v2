@@ -177,19 +177,7 @@ public class ClientController {
             ex.printStackTrace();
         }
     }
-    
-    public Room receiveEndGame() throws IOException, ClassNotFoundException{
-        try {
-            ObjectInputStream ois
-                    = new ObjectInputStream(mySocket.getInputStream());
-            Object o = ois.readObject();
-            Room room = (Room) o;
-            return room;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
-        }
-    }
+
 
     public boolean closeConnection() {
         try {
@@ -200,5 +188,30 @@ public class ClientController {
         }
 
         return true;
+    }
+    
+    public void sendGetWinner(int roomId) {
+        try {
+            ObjectOutputStream oos
+                    = new ObjectOutputStream(mySocket.getOutputStream());
+            oos.writeObject("getWinner");
+            oos.flush();
+            oos.writeObject(roomId);
+            oos.flush();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    public String getWinner() {
+        try {
+            ObjectInputStream ois
+                    = new ObjectInputStream(mySocket.getInputStream());
+            Object o = ois.readObject();
+            return (String)o;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 }

@@ -4,6 +4,7 @@
  */
 package btl_ltm.view;
 
+import btl_ltm.controller.ClientController;
 import btl_ltm.entity.Room;
 import btl_ltm.entity.User;
 
@@ -16,10 +17,14 @@ public class Win extends javax.swing.JFrame {
     /**
      * Creates new form win
      */
-    private Room room;
+    private String winner;
     private User user;
-    public Win(Room room, User user) {
-        this.room = room;
+    public Win(User user, int roomId) {
+        ClientController clientCtr = new ClientController();
+        clientCtr.openConnection();
+        clientCtr.sendGetWinner(roomId);
+        this.winner = clientCtr.getWinner();
+        clientCtr.closeConnection();
         this.user = user;
         initComponents();
     }
@@ -58,7 +63,7 @@ public class Win extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Verdana", 0, 18)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText(this.room.getWinner());
+        jLabel2.setText(this.winner);
 
         jLabel1.setFont(new java.awt.Font("Javanese Text", 1, 48)); // NOI18N
         jLabel1.setText("Winner");
