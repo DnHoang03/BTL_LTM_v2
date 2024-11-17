@@ -1,0 +1,32 @@
+# NetBeans specific files
+nbproject/
+
+# Build output
+/build/
+dist/
+*.class
+
+# IDE configuration files
+*.iml
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Database files
+data
+*.db
+
+# Other files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
