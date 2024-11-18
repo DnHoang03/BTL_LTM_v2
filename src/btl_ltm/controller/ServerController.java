@@ -30,13 +30,11 @@ public class ServerController {
     private ServerSocket myServer;
     private int serverPort = 8888;
     private UserDAO userDao;
-    private RoomDAO roomDao;
     private static List<Socket> clientSockets = new ArrayList<>();
     private Queue<ObjectOutputStream> findingUser = new LinkedList<ObjectOutputStream>();
     
     public ServerController() {
         userDao = new UserDAO();
-        roomDao = new RoomDAO();
         try (ServerSocket serverSocket = new ServerSocket(serverPort)) {
             System.out.println("Server is listening on port " + serverPort);
             while (true) {
@@ -90,9 +88,10 @@ public class ServerController {
                     case "findGame":
                         User user = (User)out.readObject();
                         findingUser.add(in);
-                        if(findingUser.size() == 2) {
+                        RoomDAO roomDao = new RoomDAO();
+                        if(findingUser.size() == 1) {
                             Integer currentRoomID = roomDao.insertRoom();
-                            userDao.updateRoomId(user.getId(), currentRoomID);
+                            userDao.updateRoomId(user.getId(), (user.getMatch() == null) ? 1:(user.getMatch()+1), currentRoomID);
                             findingUser.peek().writeObject(currentRoomID);
                             findingUser.peek().flush();
                             findingUser.poll();
@@ -154,14 +153,23 @@ public class ServerController {
     
     private void handleEventEndgame(String username, int time, int point, int roomId, ObjectOutputStream inp) {
         try {
+            RoomDAO roomDao = new RoomDAO();
             Room room = roomDao.getRoomById(roomId);
-            if((room.getBestScore() == null || room.getBestScore() < point)
+            UserDAO userDao = new UserDAO();
+            if((room.getWinner() == null || room.getBestScore() < point)
                 || (room.getBestScore() == point && room.getTime() > time)    ) {
-                roomDao.updateRoom(room.getId(), username, point, time);
+                int total = (room.getTotalCompleted()==null)?1:(room.getTotalCompleted()+1);
+                roomDao.updateRoom(room.getId(), username, point,time, total);
                 room.setBestScore(point);
                 room.setTime(time);
                 room.setWinner(username);
+                room.setTotalCompleted(total);
+                if(total == 1) {
+                    User user = userDao.getUserByUsername(room.getWinner());
+                    userDao.updateScore(user.getId(), (user.getScore() == null)?1:(user.getScore()+1));
+                }
             }
+            inp.writeObject("end");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -187,6 +195,7 @@ public class ServerController {
     }
     
     private void handeEventGetWinner(int roomId, ObjectOutputStream in) throws IOException {
+        RoomDAO roomDao = new RoomDAO();
         Room room = roomDao.getRoomById(roomId);
         in.writeObject(room.getWinner());
         in.flush();

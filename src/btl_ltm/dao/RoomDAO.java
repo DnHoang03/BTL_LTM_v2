@@ -35,12 +35,12 @@ public class RoomDAO extends DbContext<Room>{
         }
     }
     
-    public void updateRoom(int id, String username, int score, int time) {
+    public void updateRoom(int id, String username, int score, int time, int totalCompleted) {
         try {
             String query = "UPDATE room " +
-                    "SET winner = ? ,best_score = ? ,time = ? " +
+                    "SET winner = ? ,best_score = ? ,time = ?, total_completed = ? " +
                     "WHERE id = ? ";
-            update(query, username, score, time, id);
+            update(query, username, score, time, totalCompleted, id);
         } catch (Exception e) {
             throw e;
         }

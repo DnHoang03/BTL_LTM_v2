@@ -181,12 +181,15 @@ public class Register extends javax.swing.JFrame {
         clientCtr.sendDataRegister(user);
         User u = clientCtr.receiveDataAuth();
         System.out.println(u);
+        clientCtr.closeConnection();
         if (u != null) {
             showMessage("Đăng ký thành công!");
+            Login login = new Login();
+            login.setVisible(true);
+            dispose();
         } else {
             showMessage("Username đã tồn tại!");
         }
-        clientCtr.closeConnection();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void userTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userTxtActionPerformed

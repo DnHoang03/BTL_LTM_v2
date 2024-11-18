@@ -18,6 +18,18 @@ public class UserDAO extends DbContext<User> {
         String sql = "SELECT * FROM Users";
         return query(sql, new UserMapper());
     }
+    
+    public User getUserByUsername(String username) {
+        try{
+            String query = "SELECT * FROM users WHERE username = ? LIMIT 1";
+            List<User> users = query(query, new UserMapper(), username);
+
+            return users == null ? null : users.get(0);
+        }
+        catch(Exception ex){
+            return null;
+        }
+    }
 
     public User getUserByUserNamePassword(String user, String pass) {
         try{
@@ -50,12 +62,23 @@ public class UserDAO extends DbContext<User> {
         }
     }
     
-    public void updateRoomId(int userId, int roomId) {
+    public void updateRoomId(int userId, int match, int roomId) {
         try {
             String query = "UPDATE users " + 
-                    "SET room_id = ? " +
+                    "SET room_id = ? , match_total = ? " +
                     "WHERE id = ? ";
-            update(query, roomId, userId);
+            update(query, roomId, match, userId);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void updateScore(int userId, int score) {
+        try {
+            String query = "UPDATE users " + 
+                    "SET score = ? " +
+                    "WHERE id = ? ";
+            update(query, score, userId);
         } catch(Exception e) {
             e.printStackTrace();
         }

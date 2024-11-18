@@ -385,7 +385,13 @@ public class DisplayColor extends javax.swing.JFrame {
         ClientController clientCtr = new ClientController();
         clientCtr.openConnection();
         clientCtr.sendEndGame(user.getUsername(), winTime, totalPoint, user.getRoomId());
+        clientCtr.receiveEndGame();
         clientCtr.closeConnection();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(DisplayColor.class.getName()).log(Level.SEVERE, null, ex);
+        }
         Win win = new Win(user, user.getRoomId());
         win.setVisible(true);
         dispose();

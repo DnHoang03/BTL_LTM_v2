@@ -68,7 +68,6 @@ public class ClientController {
             oos.flush();
             oos.writeObject(user);
             oos.flush();
-            oos.close();
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
@@ -97,7 +96,6 @@ public class ClientController {
                     = new ObjectInputStream(mySocket.getInputStream());
             Object o = ois.readObject();
             List<User> res = (List<User>) o;
-            ois.close();
             return res;
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -175,6 +173,16 @@ public class ClientController {
             oos.flush();
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+    
+    public void receiveEndGame() {
+        try {
+            ObjectInputStream onp = 
+                    new ObjectInputStream(mySocket.getInputStream());
+            onp.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
