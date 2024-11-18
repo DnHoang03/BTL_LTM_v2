@@ -22,7 +22,7 @@ public class PopupUtil {
         JDialog dialog = new JDialog(parent, "Popup", true);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.add(new JLabel(message, SwingConstants.CENTER));
-        dialog.setSize(200, 100);
+        dialog.setSize(250, 100);
         dialog.setLocationRelativeTo(parent); // Đặt dialog ở giữa frame cha
         dialog.setVisible(true);
 

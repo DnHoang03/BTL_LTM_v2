@@ -144,6 +144,8 @@ public class NewMenu extends javax.swing.JFrame {
             @Override
             protected void done() {
                 // Sau khi công việc trong doInBackground() hoàn thành, bạn có thể cập nhật UI
+                jButton1.setText("Tìm thành công!");
+
                 ShowColor showColor = new ShowColor(user);  // Hiển thị giao diện sau khi có thông báo
                 showColor.setVisible(true);
                 dispose();  // Đóng cửa sổ hiện tại

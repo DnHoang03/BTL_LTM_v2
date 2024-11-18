@@ -262,6 +262,7 @@ public class DisplayColor extends javax.swing.JFrame {
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         // TODO add your handling code here:
         this.totalPicked = 3;
+        jLabel3.setText("Bạn đã lưu kết quả.");
         PopupUtil.showTemporaryPopup(this, "Vui lòng chờ đến khi trận đấu hết thời gian.", 1000);
     }//GEN-LAST:event_jButton9ActionPerformed
 

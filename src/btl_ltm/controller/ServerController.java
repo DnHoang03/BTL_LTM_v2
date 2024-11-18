@@ -29,12 +29,11 @@ public class ServerController {
 
     private ServerSocket myServer;
     private int serverPort = 8888;
-    private UserDAO userDao;
     private static List<Socket> clientSockets = new ArrayList<>();
     private Queue<ObjectOutputStream> findingUser = new LinkedList<ObjectOutputStream>();
     
     public ServerController() {
-        userDao = new UserDAO();
+        UserDAO userDao = new UserDAO();
         try (ServerSocket serverSocket = new ServerSocket(serverPort)) {
             System.out.println("Server is listening on port " + serverPort);
             while (true) {
@@ -89,12 +88,15 @@ public class ServerController {
                         User user = (User)out.readObject();
                         findingUser.add(in);
                         RoomDAO roomDao = new RoomDAO();
-                        if(findingUser.size() == 1) {
+                        int cnt = 1;
+                        if(findingUser.size() == cnt) {
                             Integer currentRoomID = roomDao.insertRoom();
-                            userDao.updateRoomId(user.getId(), (user.getMatch() == null) ? 1:(user.getMatch()+1), currentRoomID);
-                            findingUser.peek().writeObject(currentRoomID);
-                            findingUser.peek().flush();
-                            findingUser.poll();
+                            while(cnt != 0) {
+                                --cnt;
+                                findingUser.peek().writeObject(currentRoomID);
+                                findingUser.peek().flush();
+                                findingUser.poll();
+                            }
                         }
                         break;
                     case "endGame":
@@ -115,14 +117,14 @@ public class ServerController {
                 Logger.getLogger(ServerController.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
                 // Đóng kết nối khi client ngắt kết nối
-                try {
-                    clientSocket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                synchronized (clientSockets) {
-                    clientSockets.remove(clientSocket);
-                }
+//                try {
+////                    clientSocket.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                synchronized (clientSockets) {
+//                    clientSockets.remove(clientSocket);
+//                }
                 System.out.println("Client disconnected: " + clientSocket.getInetAddress());
             }
         }
@@ -130,6 +132,7 @@ public class ServerController {
 
     private void handleEventLogin(Object o, ObjectOutputStream oos) throws IOException {
         UserLogin user = (UserLogin) o;
+        UserDAO userDao = new UserDAO();
         User result = userDao.getUserByUserNamePassword(user.getUser(), user.getPassword());
         System.out.println(result != null ? result : null);
         oos.writeObject(result != null ? result : null);
@@ -138,6 +141,7 @@ public class ServerController {
 
     private void handleEventRegister(Object o, ObjectOutputStream oos) throws IOException {
         UserLogin user = (UserLogin) o;
+        UserDAO userDao = new UserDAO();
         User result = userDao.getUserByUserNamePassword(user.getUser(), user.getPassword());
         if (result != null) {
             oos.writeObject(null);
@@ -156,6 +160,8 @@ public class ServerController {
             RoomDAO roomDao = new RoomDAO();
             Room room = roomDao.getRoomById(roomId);
             UserDAO userDao = new UserDAO();
+            User user = userDao.getUserByUsername(username);
+            userDao.updateRoomId(user.getId(), (user.getMatch() == null) ? 1:(user.getMatch()+1), roomId);
             if((room.getWinner() == null || room.getBestScore() < point)
                 || (room.getBestScore() == point && room.getTime() > time)    ) {
                 int total = (room.getTotalCompleted()==null)?1:(room.getTotalCompleted()+1);
@@ -164,10 +170,6 @@ public class ServerController {
                 room.setTime(time);
                 room.setWinner(username);
                 room.setTotalCompleted(total);
-                if(total == 1) {
-                    User user = userDao.getUserByUsername(room.getWinner());
-                    userDao.updateScore(user.getId(), (user.getScore() == null)?1:(user.getScore()+1));
-                }
             }
             inp.writeObject("end");
         } catch (Exception e) {
@@ -177,6 +179,7 @@ public class ServerController {
     
     private void getListRanks(ObjectOutputStream oos) throws IOException {  
         try{
+            UserDAO userDao = new UserDAO();
             List<User> result = userDao.GetRanks();
             oos.writeObject(result);
             oos.flush();
@@ -197,6 +200,9 @@ public class ServerController {
     private void handeEventGetWinner(int roomId, ObjectOutputStream in) throws IOException {
         RoomDAO roomDao = new RoomDAO();
         Room room = roomDao.getRoomById(roomId);
+        UserDAO userDao = new UserDAO();
+        User user = userDao.getUserByUsername(room.getWinner());
+        userDao.updateScore(user.getId(), (user.getScore() == null)?1:(user.getScore()+1));
         in.writeObject(room.getWinner());
         in.flush();
     }
