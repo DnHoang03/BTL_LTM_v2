@@ -27,6 +27,7 @@ public class ShowColor extends javax.swing.JFrame {
     private List<Color> showedColor = new ArrayList<>();
     private int counterStart = 9;
     private User user;
+    private Timer timer;
     
     public ShowColor(User user) {
         Random random = new Random();
@@ -115,6 +116,9 @@ public class ShowColor extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        NewMenu newMenu = new NewMenu(user);
+        newMenu.setVisible(true);
+        this.timer.stop();
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -158,7 +162,7 @@ public class ShowColor extends javax.swing.JFrame {
     }
     
     private void setStartTime() {
-        Timer timer = new Timer(1000, new ActionListener() {
+        timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(counterStart > 6) {

@@ -42,6 +42,7 @@ public class DisplayColor extends javax.swing.JFrame {
     private int totalPicked = 0;
     private int time = 15;
     private int winTime = 15;
+    private Timer timer;
     
     public DisplayColor() {
         initComponents();
@@ -268,6 +269,9 @@ public class DisplayColor extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        NewMenu newMenu = new NewMenu(user);
+        newMenu.setVisible(true);
+        this.timer.stop();
         dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -359,7 +363,7 @@ public class DisplayColor extends javax.swing.JFrame {
     }
     
     private void setStartTime() {
-        Timer timer = new Timer(1000, new ActionListener() {
+        timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(time > 0) {

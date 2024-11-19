@@ -211,12 +211,12 @@ public class ClientController {
         }
     }
     
-    public String getWinner() {
+    public Room getWinner() {
         try {
             ObjectInputStream ois
                     = new ObjectInputStream(mySocket.getInputStream());
             Object o = ois.readObject();
-            return (String)o;
+            return (Room)o;
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;

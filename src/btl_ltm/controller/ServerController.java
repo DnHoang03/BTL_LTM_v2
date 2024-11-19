@@ -203,7 +203,7 @@ public class ServerController {
         UserDAO userDao = new UserDAO();
         User user = userDao.getUserByUsername(room.getWinner());
         userDao.updateScore(user.getId(), (user.getScore() == null)?1:(user.getScore()+1));
-        in.writeObject(room.getWinner());
+        in.writeObject(room);
         in.flush();
     }
 }
