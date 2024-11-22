@@ -6,6 +6,7 @@ package btl_ltm.view;
 
 import btl_ltm.controller.ClientController;
 import btl_ltm.dao.UserDAO;
+import btl_ltm.entity.FindGameResult;
 import btl_ltm.entity.User;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -22,6 +23,7 @@ public class NewMenu extends javax.swing.JFrame {
      * Creates new form NewMenu
      */
     private User user;
+    private FindGameResult findGameResult;
     public NewMenu() {
         initComponents();
     }
@@ -129,9 +131,9 @@ public class NewMenu extends javax.swing.JFrame {
                 clientCtr.sendFindingGame(user);  // Gửi yêu cầu tìm game
                 try {
                     // Nhận dữ liệu từ server mà không làm gián đoạn luồng chính
-                    int message = clientCtr.receiveFindGame();  
-                    
-                    user.setRoomId(message);
+                    FindGameResult message = clientCtr.receiveFindGame();  
+                    findGameResult = message;
+                    user.setRoomId(message.getRoomId());
                     // Xử lý thông điệp nhận được từ server (nếu cần)
                     System.out.println("Thông điệp từ server: " + message);
                 } catch (Exception ex) {
@@ -146,7 +148,7 @@ public class NewMenu extends javax.swing.JFrame {
                 // Sau khi công việc trong doInBackground() hoàn thành, bạn có thể cập nhật UI
                 jButton1.setText("Tìm thành công!");
 
-                ShowColor showColor = new ShowColor(user);  // Hiển thị giao diện sau khi có thông báo
+                ShowColor showColor = new ShowColor(user, findGameResult);  // Hiển thị giao diện sau khi có thông báo
                 showColor.setVisible(true);
                 dispose();  // Đóng cửa sổ hiện tại
             }

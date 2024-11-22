@@ -6,18 +6,22 @@ package btl_ltm.controller;
 
 import btl_ltm.dao.RoomDAO;
 import btl_ltm.dao.UserDAO;
+import btl_ltm.entity.FindGameResult;
 import btl_ltm.entity.Room;
 import btl_ltm.entity.User;
 import btl_ltm.entity.UserLogin;
+import java.awt.Color;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,7 +37,6 @@ public class ServerController {
     private Queue<ObjectOutputStream> findingUser = new LinkedList<ObjectOutputStream>();
     
     public ServerController() {
-        UserDAO userDao = new UserDAO();
         try (ServerSocket serverSocket = new ServerSocket(serverPort)) {
             System.out.println("Server is listening on port " + serverPort);
             while (true) {
@@ -53,7 +56,6 @@ public class ServerController {
         }
     }
     
-    // Lớp này sẽ xử lý mỗi kết nối client
     private class ClientHandler extends Thread {
         private Socket clientSocket;
         private ObjectInputStream out;
@@ -90,14 +92,21 @@ public class ServerController {
                         RoomDAO roomDao = new RoomDAO();
                         int cnt = 1;
                         if(findingUser.size() == cnt) {
+                            List<Color> showedColor = getPredictColor();
+                            List<Color> displayColor = displayColor(showedColor);
                             Integer currentRoomID = roomDao.insertRoom();
                             while(cnt != 0) {
                                 --cnt;
-                                findingUser.peek().writeObject(currentRoomID);
+                                FindGameResult findGameResult = new FindGameResult();
+                                findGameResult.setRoomId(currentRoomID);
+                                findGameResult.setShowColor(showedColor);
+                                findGameResult.setDisplayColor(displayColor);
+                                findingUser.peek().writeObject(findGameResult);
                                 findingUser.peek().flush();
                                 findingUser.poll();
                             }
                         }
+                        
                         break;
                     case "endGame":
                         String username = (String)out.readObject();
@@ -117,14 +126,6 @@ public class ServerController {
                 Logger.getLogger(ServerController.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
                 // Đóng kết nối khi client ngắt kết nối
-//                try {
-////                    clientSocket.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                synchronized (clientSockets) {
-//                    clientSockets.remove(clientSocket);
-//                }
                 System.out.println("Client disconnected: " + clientSocket.getInetAddress());
             }
         }
@@ -205,5 +206,44 @@ public class ServerController {
         userDao.updateScore(user.getId(), (user.getScore() == null)?1:(user.getScore()+1));
         in.writeObject(room);
         in.flush();
+    }
+    
+    private List<Color> getPredictColor() {
+        List<Color> showedColor = new ArrayList<>();
+        Random random = new Random();
+        while(showedColor.size() < 3) {
+            int red = random.nextInt(256);
+            int green = random.nextInt(256);
+            int blue = random.nextInt(256);
+            Color color = new Color(red, green, blue);
+            if(!showedColor.contains(color)) showedColor.add(color);
+        }
+        return showedColor;
+    }
+    
+    private List<Color> displayColor(List<Color>showedColor) {
+        List<Color> totalColor = new ArrayList<>();
+        totalColor.addAll(showedColor);
+        while (totalColor.size() < 7) {
+            while (true) {
+                Random random = new Random();
+                int red = random.nextInt(256);
+                int green = random.nextInt(256);
+                int blue = random.nextInt(256);
+                boolean equal = false;
+                for (Color color : totalColor) {
+                    if (color.getRed() == red && color.getBlue() == blue && color.getGreen() == green) {
+                        equal = true;
+                        break;
+                    }
+                }
+                if (!equal) {
+                    totalColor.add(new Color(red, green, blue));
+                    break;
+                }
+            }
+        }
+        Collections.shuffle(totalColor);
+        return totalColor;
     }
 }

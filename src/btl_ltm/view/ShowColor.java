@@ -4,6 +4,7 @@
  */
 package btl_ltm.view;
 
+import btl_ltm.entity.FindGameResult;
 import btl_ltm.entity.User;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -28,17 +29,13 @@ public class ShowColor extends javax.swing.JFrame {
     private int counterStart = 9;
     private User user;
     private Timer timer;
+    private FindGameResult findGameResult;
     
-    public ShowColor(User user) {
+    public ShowColor(User user,FindGameResult findGameResult) {
+        this.findGameResult = findGameResult;
         Random random = new Random();
         this.user = user;
-        while(showedColor.size() < 3) {
-            int red = random.nextInt(256);
-            int green = random.nextInt(256);
-            int blue = random.nextInt(256);
-            Color color = new Color(red, green, blue);
-            if(!showedColor.contains(color)) showedColor.add(color);
-        }
+        this.showedColor = findGameResult.getShowColor();
         initComponents();
         setStartTime();
     }
@@ -182,7 +179,7 @@ public class ShowColor extends javax.swing.JFrame {
                 else {
                     ((Timer) e.getSource()).stop(); // Dừng Timer khi đếm đến 0
                     jLabel1.setText("Hết giờ!");
-                    DisplayColor dis = new DisplayColor(showedColor, user);
+                    DisplayColor dis = new DisplayColor(showedColor, user, findGameResult);
                     dis.setVisible(true);
                     dispose();
                 }

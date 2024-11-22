@@ -7,6 +7,7 @@ package btl_ltm.view;
 import btl_ltm.controller.ClientController;
 import btl_ltm.dao.RoomDAO;
 import btl_ltm.dao.UserDAO;
+import btl_ltm.entity.FindGameResult;
 import btl_ltm.entity.Room;
 import btl_ltm.entity.User;
 import btl_ltm.entity.UserLogin;
@@ -43,17 +44,16 @@ public class DisplayColor extends javax.swing.JFrame {
     private int time = 15;
     private int winTime = 15;
     private Timer timer;
+    private FindGameResult findGameResult;
     
     public DisplayColor() {
         initComponents();
     }
 
-    public DisplayColor(List<Color> generatedColors, User user) {
-        
+    public DisplayColor(List<Color> generatedColors, User user, FindGameResult findGameResult) {
+        this.findGameResult = findGameResult;
         this.generatedColor.addAll(generatedColors);
-        this.totalColor.addAll(generatedColors);
-        generateColor();
-        Collections.shuffle(this.totalColor);
+        this.totalColor = findGameResult.getDisplayColor();
         this.user = user;
         initComponents();
         setStartTime();

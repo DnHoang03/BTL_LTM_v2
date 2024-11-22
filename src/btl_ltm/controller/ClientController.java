@@ -4,6 +4,7 @@
  */
 package btl_ltm.controller;
 
+import btl_ltm.entity.FindGameResult;
 import btl_ltm.entity.Room;
 import btl_ltm.entity.User;
 import btl_ltm.entity.UserLogin;
@@ -131,15 +132,15 @@ public class ClientController {
     }
     
     
-    public Integer receiveFindGame() throws IOException, ClassNotFoundException {
+    public FindGameResult receiveFindGame() throws IOException, ClassNotFoundException {
         ObjectInputStream ois = new ObjectInputStream(mySocket.getInputStream());
-        Integer result = null;
+        FindGameResult result = null;
         try {
             while (result == null) {
                 try {
                     Object data = ois.readObject();
-                    if (data instanceof Integer) {
-                        result = (Integer) data;
+                    if (data instanceof FindGameResult) {
+                        result = (FindGameResult) data;
                     } else {
                         throw new IOException("Expected Integer but received " + data.getClass().getName());
                     } // Đọc trực tiếp đối tượng từ luồng
